@@ -1,3 +1,10 @@
+# R
+postgres_pw.R
+
+# Data
+noaa/
+shapefiles/
+
 # History files
 .Rhistory
 .Rapp.history

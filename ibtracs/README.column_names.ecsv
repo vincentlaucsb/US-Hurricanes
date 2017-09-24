@@ -1,0 +1,201 @@
+Column_number,Column_name,units,Shapefile_pt_flag,Shapefile_pt_attribute_name,shapefile_att_type,shapefile_att_len,shapefile_att_prc
+1,Serial_Num,N/A,1,Serial_Num,7,13,0
+2,Season,Year,1,Season,3,4,0
+3,Num,#,1,Num,3,5,0
+4,Basin,BB,1,Basin,7,3,0
+5,Sub_basin,BB,1,Sub_basin,7,3,0
+6,Name,N/A,1,Name,7,57,0
+7,ISO_time,YYYY-MM-DD HH:MM:SS,1,ISO_time,7,19,0
+8,Nature,N/A,1,Nature,7,4,0
+9,Latitude,deg_north,0,null,3,5,0
+10,Longitude,deg_east,0,null,3,5,0
+11,Wind(WMO),kt,1,wmo_wind,5,8,2
+12,Pres(WMO),mb,1,wmo_pres,5,8,2
+13,Center,N/A,1,Center,7,10,0
+14,Wind(WMO) Percentile,%,1,wmo_wind_%,5,8,2
+15,Pres(WMO) Percentile,%,1,wmo_pres_%,5,8,2
+16,Track_type,N/A,1,Track_type,7,12,0
+17,Latitude_for_mapping,degrees_north,0,null,3,5,0
+18,Longitude_for_mapping,degrees_east,0,null,3,5,0
+19,Current Basin,N/A,1,basin,7,3,0
+20,hurdat_atl_lat,deg_north,0,null,3,5,0
+21,hurdat_atl_lon,deg_east,0,null,3,5,0
+22,hurdat_atl_grade, ,1,HDA_grade,7,5,0
+23,hurdat_atl_wind,kt,1,HDA_wind,5,8,2
+24,hurdat_atl_pres,mb,1,HDA_pres,5,8,2
+25,td9636_lat,deg_north,0,null,3,5,0
+26,td9636_lon,deg_east,0,null,3,5,0
+27,td9636_grade, ,1,TD9_grade,7,5,0
+28,td9636_wind,kt,1,TD9_wind,5,8,2
+29,td9636_pres,mb,1,TD9_pres,5,8,2
+30,reunion_lat,deg_north,0,null,3,5,0
+31,reunion_lon,deg_east,0,null,3,5,0
+32,reunion_grade, ,1,REU_grade,7,5,0
+33,reunion_wind,kt,1,REU_wind,5,8,2
+34,reunion_pres,mb,1,REU_pres,5,8,2
+35,atcf_lat,deg_north,0,null,3,5,0
+36,atcf_lon,deg_east,0,null,3,5,0
+37,atcf_grade, ,1,ATC_grade,7,5,0
+38,atcf_wind,kt,1,ATC_wind,5,8,2
+39,atcf_pres,mb,1,ATC_pres,5,8,2
+40,mlc_natl_lat,deg_north,0,null,3,5,0
+41,mlc_natl_lon,deg_east,0,null,3,5,0
+42,mlc_natl_grade, ,1,MLC_grade,7,5,0
+43,mlc_natl_wind,kt,1,MLC_wind,5,8,2
+44,mlc_natl_pres,mb,1,MLC_pres,5,8,2
+45,ds824_sh_lat,deg_north,0,null,3,5,0
+46,ds824_sh_lon,deg_east,0,null,3,5,0
+47,ds824_sh_grade, ,1,DSS_grade,7,5,0
+48,ds824_sh_wind,kt,1,DSS_wind,5,8,2
+49,ds824_sh_pres,mb,1,DSS_pres,5,8,2
+50,ds824_ni_lat,deg_north,0,null,3,5,0
+51,ds824_ni_lon,deg_east,0,null,3,5,0
+52,ds824_ni_grade, ,1,DSI_grade,7,5,0
+53,ds824_ni_wind,kt,1,DSI_wind,5,8,2
+54,ds824_ni_pres,mb,1,DSI_pres,5,8,2
+55,bom_lat,deg_north,0,null,3,5,0
+56,bom_lon,deg_east,0,null,3,5,0
+57,bom_grade, ,1,BOM_grade,7,5,0
+58,bom_wind,kt,1,BOM_wind,5,8,2
+59,bom_pres,mb,1,BOM_pres,5,8,2
+60,ds824_au_lat,deg_north,0,null,3,5,0
+61,ds824_au_lon,deg_east,0,null,3,5,0
+62,ds824_au_grade, ,1,DSA_grade,7,5,0
+63,ds824_au_wind,kt,1,DSA_wind,5,8,2
+64,ds824_au_pres,mb,1,DSA_pres,5,8,2
+65,jtwc_sh_lat,deg_north,0,null,3,5,0
+66,jtwc_sh_lon,deg_east,0,null,3,5,0
+67,jtwc_sh_grade, ,1,JTS_grade,7,5,0
+68,jtwc_sh_wind,kt,1,JTS_wind,5,8,2
+69,jtwc_sh_pres,mb,1,JTS_pres,5,8,2
+70,jtwc_wp_lat,deg_north,0,null,3,5,0
+71,jtwc_wp_lon,deg_east,0,null,3,5,0
+72,jtwc_wp_grade, ,1,JTW_grade,7,5,0
+73,jtwc_wp_wind,kt,1,JTW_wind,5,8,2
+74,jtwc_wp_pres,mb,1,JTW_pres,5,8,2
+75,td9635_lat,deg_north,0,null,3,5,0
+76,td9635_lon,deg_east,0,null,3,5,0
+77,td9635_grade, ,1,TD5_grade,7,5,0
+78,td9635_wind,kt,1,TD5_wind,5,8,2
+79,td9635_pres,mb,1,TD5_pres,5,8,2
+80,ds824_wp_lat,deg_north,0,null,3,5,0
+81,ds824_wp_lon,deg_east,0,null,3,5,0
+82,ds824_wp_grade, ,1,DSW_grade,7,5,0
+83,ds824_wp_wind,kt,1,DSW_wind,5,8,2
+84,ds824_wp_pres,mb,1,DSW_pres,5,8,2
+85,jtwc_io_lat,deg_north,0,null,3,5,0
+86,jtwc_io_lon,deg_east,0,null,3,5,0
+87,jtwc_io_grade, ,1,JTI_grade,7,5,0
+88,jtwc_io_wind,kt,1,JTI_wind,5,8,2
+89,jtwc_io_pres,mb,1,JTI_pres,5,8,2
+90,cma_lat,deg_north,0,null,3,5,0
+91,cma_lon,deg_east,0,null,3,5,0
+92,cma_grade, ,1,CMA_grade,7,5,0
+93,cma_wind,kt,1,CMA_wind,5,8,2
+94,cma_pres,mb,1,CMA_pres,5,8,2
+95,hurdat_epa_lat,deg_north,0,null,3,5,0
+96,hurdat_epa_lon,deg_east,0,null,3,5,0
+97,hurdat_epa_grade, ,1,HDE_grade,7,5,0
+98,hurdat_epa_wind,kt,1,HDE_wind,5,8,2
+99,hurdat_epa_pres,mb,1,HDE_pres,5,8,2
+100,jtwc_ep_lat,deg_north,0,null,3,5,0
+101,jtwc_ep_lon,deg_east,0,null,3,5,0
+102,jtwc_ep_grade, ,1,JTE_grade,7,5,0
+103,jtwc_ep_wind,kt,1,JTE_wind,5,8,2
+104,jtwc_ep_pres,mb,1,JTE_pres,5,8,2
+105,ds824_ep_lat,deg_north,0,null,3,5,0
+106,ds824_ep_lon,deg_east,0,null,3,5,0
+107,ds824_ep_grade, ,1,DSE_grade,7,5,0
+108,ds824_ep_wind,kt,1,DSE_wind,5,8,2
+109,ds824_ep_pres,mb,1,DSE_pres,5,8,2
+110,jtwc_cp_lat,deg_north,0,null,3,5,0
+111,jtwc_cp_lon,deg_east,0,null,3,5,0
+112,jtwc_cp_grade, ,1,JTC_grade,7,5,0
+113,jtwc_cp_wind,kt,1,JTC_wind,5,8,2
+114,jtwc_cp_pres,mb,1,JTC_pres,5,8,2
+115,tokyo_lat,deg_north,0,null,3,5,0
+116,tokyo_lon,deg_east,0,null,3,5,0
+117,tokyo_grade, ,1,JMA_grade,7,5,0
+118,tokyo_wind,kt,1,JMA_wind,5,8,2
+119,tokyo_pres,mb,1,JMA_pres,5,8,2
+120,neumann_lat,deg_north,0,null,3,5,0
+121,neumann_lon,deg_east,0,null,3,5,0
+122,neumann_grade, ,1,NEU_grade,7,5,0
+123,neumann_wind,kt,1,NEU_wind,5,8,2
+124,neumann_pres,mb,1,NEU_pres,5,8,2
+125,hko_lat,deg_north,0,null,3,5,0
+126,hko_lon,deg_east,0,null,3,5,0
+127,hko_grade, ,1,HKO_grade,7,5,0
+128,hko_wind,kt,1,HKO_wind,5,8,2
+129,hko_pres,mb,1,HKO_pres,5,8,2
+130,cphc_lat,deg_north,0,null,3,5,0
+131,cphc_lon,deg_east,0,null,3,5,0
+132,cphc_grade, ,1,CPH_grade,7,5,0
+133,cphc_wind,kt,1,CPH_wind,5,8,2
+134,cphc_pres,mb,1,CPH_pres,5,8,2
+135,wellington_lat,deg_north,0,null,3,5,0
+136,wellington_lon,deg_east,0,null,3,5,0
+137,wellington_grade, ,1,NZ_grade,7,5,0
+138,wellington_wind,kt,1,NZ_wind,5,8,2
+139,wellington_pres,mb,1,NZ_pres,5,8,2
+140,newdelhi_lat,deg_north,0,null,3,5,0
+141,newdelhi_lon,deg_east,0,null,3,5,0
+142,newdelhi_grade, ,1,IMD_grade,7,5,0
+143,newdelhi_wind,kt,1,IMD_wind,5,8,2
+144,newdelhi_pres,mb,1,IMD_pres,5,8,2
+145,nadi_lat,deg_north,0,null,3,5,0
+146,nadi_lon,deg_east,0,null,3,5,0
+147,nadi_grade, ,1,NAD_grade,7,5,0
+148,nadi_wind,kt,1,NAD_wind,5,8,2
+149,nadi_pres,mb,1,NAD_pres,5,8,2
+150,reunion_rmw,nmile,1,REU_rmw,3,5,0
+151,reunion_wind_radii_1_ne,nmile,1,REU_wr1_ne,3,5,0
+152,reunion_wind_radii_1_se,nmile,1,REU_wr1_se,3,5,0
+153,reunion_wind_radii_1_sw,nmile,1,REU_wr1_sw,3,5,0
+154,reunion_wind_radii_1_nw,nmile,1,REU_wr1_nw,3,5,0
+155,reunion_wind_radii_2_ne,nmile,1,REU_wr2_ne,3,5,0
+156,reunion_wind_radii_2_se,nmile,1,REU_wr2_se,3,5,0
+157,reunion_wind_radii_2_sw,nmile,1,REU_wr2_sw,3,5,0
+158,reunion_wind_radii_2_nw,nmile,1,REU_wr2_nw,3,5,0
+159,bom_mn_hurr_xtnt,nmile,1,BOM_hurrad,3,5,0
+160,bom_mn_gale_xtnt,nmile,1,BOM_galrad,3,5,0
+161,bom_mn_eye_diam,nmile,1,BOM_eye,3,5,0
+162,bom_roci,nmile,1,BOM_roci,3,5,0
+163,atcf_rmw,nmile,1,ATC_rmw,3,5,0
+164,atcf_poci,mb,1,ATC_poci,3,5,0
+165,atcf_roci,nmile,1,ATC_roci,3,5,0
+166,atcf_eye,nmile,1,ATC_eye,3,5,0
+167,atcf_wrad34_rad1,nmile,1,ATC_w34_r1,3,5,0
+168,atcf_wrad34_rad2,nmile,1,ATC_w34_r2,3,5,0
+169,atcf_wrad34_rad3,nmile,1,ATC_w34_r3,3,5,0
+170,atcf_wrad34_rad4,nmile,1,ATC_w34_r4,3,5,0
+171,atcf_wrad50_rad1,nmile,1,ATC_w50_r1,3,5,0
+172,atcf_wrad50_rad2,nmile,1,ATC_w50_r2,3,5,0
+173,atcf_wrad50_rad3,nmile,1,ATC_w50_r3,3,5,0
+174,atcf_wrad50_rad4,nmile,1,ATC_w50_r4,3,5,0
+175,atcf_wrad64_rad1,nmile,1,ATC_w64_r1,3,5,0
+176,atcf_wrad64_rad2,nmile,1,ATC_w64_r2,3,5,0
+177,atcf_wrad64_rad3,nmile,1,ATC_w64_r3,3,5,0
+178,atcf_wrad64_rad4,nmile,1,ATC_w64_r4,3,5,0
+179,tokyo_dir50,Quad,1,JMA_dir50,3,5,0
+180,tokyo_long50,nmile,1,JMA_long50,3,5,0
+181,tokyo_short50,nmile,1,JMA_shrt50,3,5,0
+182,tokyo_dir30,Quad,1,JMA_dir30,3,5,0
+183,tokyo_long30,nmile,1,JMA_long30,3,5,0
+184,tokyo_short30,nmile,1,JMA_shrt30,3,5,0
+185,jtwc_??_rmw,nmile,1,JTX_rmw,3,5,0
+186,jtwc_??_poci,mb,1,JTX_poci,3,5,0
+187,jtwc_??_roci,nmile,1,JTX_roci,3,5,0
+188,jtwc_??_eye,nmile,1,JTX_eye,3,5,0
+189,jtwc_??_wrad34_rad1,nmile,1,JTX_w34_r1,3,5,0
+190,jtwc_??_wrad34_rad2,nmile,1,JTX_w34_r2,3,5,0
+191,jtwc_??_wrad34_rad3,nmile,1,JTX_w34_r3,3,5,0
+192,jtwc_??_wrad34_rad4,nmile,1,JTX_w34_r4,3,5,0
+193,jtwc_??_wrad50_rad1,nmile,1,JTX_w50_r1,3,5,0
+194,jtwc_??_wrad50_rad2,nmile,1,JTX_w50_r2,3,5,0
+195,jtwc_??_wrad50_rad3,nmile,1,JTX_w50_r3,3,5,0
+196,jtwc_??_wrad50_rad4,nmile,1,JTX_w50_r4,3,5,0
+197,jtwc_??_wrad64_rad1,nmile,1,JTX_w64_r1,3,5,0
+198,jtwc_??_wrad64_rad2,nmile,1,JTX_w64_r2,3,5,0
+199,jtwc_??_wrad64_rad3,nmile,1,JTX_w64_r3,3,5,0
+200,jtwc_??_wrad64_rad4,nmile,1,JTX_w64_r4,3,5,0
