@@ -1,3 +1,34 @@
+widen <- function(df) {
+  # Given a data frame widen split it into two tables with the same length
+  new_nrow = nrow(df)/2
+  left = df[1:new_nrow, ]
+  right = df[new_nrow: nrow(df), ]
+  
+  if (nrow(left) < nrow(right)) {
+    left[new_nrow + 1, ] = rep("", ncol(left))
+  }
+  
+  return(cbind(left, right))
+}
+
+sshs_color <- function(category) {
+  if (category == "Tropical Depression") {
+    return("#5ebaff")
+  } else if (category == "Tropical Storm") {
+    return("#00faf4")
+  } else if (category == "Category 1") {
+    return("#00faf4")
+  } else if (category == "Category 2") {
+    return("#ffe775")
+  } else if (category == "Category 3") {
+    return("#ffc140")
+  } else if (category == "Category 4") {
+    return("#ff8f20")
+  } else {
+    return("#ff6060")
+  }
+}
+
 sshs_diagram <- function() {
   return(ggplot() +
     # Draw rectangles with text

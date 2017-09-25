@@ -6,11 +6,12 @@ output:
   pdf_document: default
 ---
 
-```{r, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 source('db_conn.R')
 source('hurricanes.R')
 conn <- hurr_db_connect()
 
+library(dplyr)
 library(leaflet)
 library(ggplot2)
 library(pander)
@@ -27,39 +28,48 @@ theme_set(theme_bw() + theme(
 ```
 
 # Hurricanes
-## Measuring the intensity of hurricanes
-### Saffir-Simpson Hurricane Scale
+## Measuring Hurricane Intensity: Saffir-Simpson Hurricane Scale
 
 ```{r "SSHS Diagram"}
 sshs_diagram()
 ```
 
-## Have hurricanes gotten more severe over the years
+## Have Hurricanes Become Worse
+### Have Category 5 hurricanes become more common
+```{sql connection=conn, output.var='cat5'}
+SELECT
+  season, name, wind_max_kt
+FROM hurricane_summary
+WHERE season > 1900 AND saffir_simpson(wind_max_kt) LIKE 'Category 5'
+ORDER BY season DESC
+```
+
+```{r echo=FALSE}
+names(cat5) = c("Season", "Name", "Peak Wind (Knots)")
+pander(widen(cat5))
+```
+
+### Have they gotten stronger
 ```{sql connection=conn, output.var='hurr_by_year'}
 SELECT
-  season, count(name), AVG(wind_max_kt), saffir_simpson(AVG(wind_max_kt))
+  season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
+  saffir_simpson(AVG(wind_max_kt)),
+  saffir_simpson_color(AVG(wind_max_kt))
 FROM hurricane_summary
 WHERE season > 1900 AND wind_max_kt::int != -999
 GROUP BY season
 ORDER BY season
 ```
 
-```{sql connection=conn, output.var='hurr_by_year2'}
-SELECT
-  season, count(name), AVG(wind_max_kt), saffir_simpson(AVG(wind_max_kt))
-FROM hurricane_summary
-WHERE season > 1950 AND wind_max_kt::int != -999
-GROUP BY season
-ORDER BY season
-```
-
-```{r}
-pander(hurr_by_year2)
-```
-
-```{r}
-ggplot(hurr_by_year, aes(season, count)) +
+```{r "Hurricanes per Season", echo=FALSE}
+ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
   geom_bar(stat='identity') +
+  scale_fill_manual(
+    "Average Intensity",
+    values = c("Tropical Depression" = "#5ebaff",
+               "Tropical Storm" = "#00faf4",
+               "Category 1" = "#ffffcc")
+  ) +
   labs(
     title="Number of Hurricanes per Season",
     x="Year",
@@ -68,6 +78,10 @@ ggplot(hurr_by_year, aes(season, count)) +
 ```
 
 ## 1900 Galveston Hurricane
+The 1900 hurricane that hit Galveston, Texas was the deadliest hurricane in American history.
+
+(Write more later)
+
 ```{sql connection=conn, output.var='galv1900'}
 WITH galv1900 AS (SELECT * FROM hurricane_summary
 WHERE season::int = 1900
