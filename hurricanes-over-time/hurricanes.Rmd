@@ -53,8 +53,7 @@ pander(widen(cat5))
 ```{sql connection=conn, output.var='hurr_by_year'}
 SELECT
   season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
-  saffir_simpson(AVG(wind_max_kt)),
-  saffir_simpson_color(AVG(wind_max_kt))
+  saffir_simpson(AVG(wind_max_kt))
 FROM hurricane_summary
 WHERE season > 1900 AND wind_max_kt::int != -999
 GROUP BY season
@@ -77,29 +76,62 @@ ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
   )
 ```
 
+```{sql connection=conn, output.var='hurr_by_cat_year'}
+SELECT
+  season, saffir_simpson(wind_max_kt), count(name)
+FROM hurricane_summary
+WHERE season > 1900 AND wind_max_kt::int != -999
+GROUP BY saffir_simpson(wind_max_kt), season
+ORDER BY season
+```
+
+```{r}
+ggplot(hurr_by_cat_year, aes(x=season, y=count, fill=saffir_simpson)) +
+  geom_bar(stat='identity') +
+  scale_fill_manual(
+    "Intensity (Saffir-Simpson)",
+    values = SSHS_COLOR_LABEL
+  ) +
+  labs(
+    title="Number of Hurricanes per Season",
+    x="Year",
+    y="Number"
+  )
+```
+
 ## 1900 Galveston Hurricane
 The 1900 hurricane that hit Galveston, Texas was the deadliest hurricane in American history.
 
 (Write more later)
 
 ```{sql connection=conn, output.var='galv1900'}
-WITH galv1900 AS (SELECT * FROM hurricane_summary
+WITH galv1900 AS
+(SELECT path_intensity FROM hurricane_summary 
 WHERE season::int = 1900
 AND st_intersects(path, (SELECT geom FROM us_states WHERE name LIKE 'Texas')))
-SELECT
-    (jsonb_array_elements(st_asgeojson(path)::jsonb->'coordinates')->>0)::float AS lon,
-    (jsonb_array_elements(st_asgeojson(path)::jsonb->'coordinates')->>1)::float AS lat
-FROM galv1900
+SELECT *
+FROM json_to_recordset(array_to_json((SELECT * FROM galv1900)))
+AS x(lon float, lat float, wind_max_kt float, time text, sshs text)
 ```
 
 ### Path
-```{r}
+While meteorologists had eyes on the 1900 hurricane as early as August 30, they were unable to get a good idea of its trajectory.
+As it moved over the Gulf of Mexico, it rapidly strengthened and moved more westward than expected. Although ships in the area were
+able to get a fix on its trajectory, the limited communications abilities of the time prevented this information from reaching shore.
+
+```{r, echo=FALSE}
 # See: https://stackoverflow.com/questions/42989040/how-to-troubleshoot-missing-osm-tiles-in-leaflet-html-widget
 m <- leaflet()
 m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
 for (i in 1:nrow(galv1900)) {
-  m <- addCircleMarkers(m, lng=galv1900[i, 1], lat=galv1900[i, 2])
+  m <- addCircleMarkers(m,
+                        label=galv1900$time[i],
+                        lng=galv1900$lon[i],
+                        lat=galv1900$lat[i],
+                        color=sshs_color(galv1900$sshs[i]))
 }
+m <- addLegend(m, position = c("bottomright"), title="Intensity",
+               labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
 m
 ```
 

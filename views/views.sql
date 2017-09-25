@@ -34,9 +34,24 @@ DROP MATERIALIZED VIEW IF EXISTS hurricane_summary;
 CREATE MATERIALIZED VIEW hurricane_summary AS
 WITH init_query AS (SELECT
 	serial_num, name, season,
+    
+    -- Build a geometry object of the entire path of the hurricane
 	array_agg(ST_SetSRID(ST_MakePoint(longitude_for_mapping,
                latitude_for_mapping), 4269)) as points,
+               
+    -- Build an array of all of the hurricane's measured wind speeds
     array_max(array_agg(wind_wmo)) as wind_max_kt,
+    
+    -- Build an array of JSON objects
+    -- Each of with corresponds to the location and intensity of a hurricane 
+    -- at one point in time
+    array_agg(jsonb_build_object(
+        'lon', longitude_for_mapping,
+        'lat', latitude_for_mapping,
+        'time', iso_time,
+        'wind_max_kt', wind_wmo,
+        'sshs', saffir_simpson(wind_wmo))) as path_intensity,
+
 	array_agg(iso_time) as time_range
 FROM ibtracs_hurricanes
 GROUP BY serial_num, name, season
@@ -46,6 +61,7 @@ SELECT
 	name,
     season,
     wind_max_kt,
+    path_intensity,
 	saffir_simpson(wind_max_kt) AS sshs_peak,
     ST_MakeLine(points) as path,
     array_min(time_range) AS begin,

@@ -11,13 +11,23 @@ widen <- function(df) {
   return(cbind(left, right))
 }
 
+SSHS_COLOR_SCALE <- c("#5ebaff", "#00faf4", "#ffffcc", "#ffe775",
+                      "#ffc140", "#ff8f20", "#ff6060")
+SSHS_LABELS <- c("Tropical Storm", "Tropical Depression", "Category 1",
+                 "Category 2", "Category 3", "Category 4", "Category 5")
+
+SSHS_COLOR_LABEL <- c()
+for (i in 1:7) {
+  SSHS_COLOR_LABEL[SSHS_LABELS[i]] = SSHS_COLOR_SCALE[i]
+}
+
 sshs_color <- function(category) {
   if (category == "Tropical Depression") {
     return("#5ebaff")
   } else if (category == "Tropical Storm") {
     return("#00faf4")
   } else if (category == "Category 1") {
-    return("#00faf4")
+    return("#ffffcc")
   } else if (category == "Category 2") {
     return("#ffe775")
   } else if (category == "Category 3") {
