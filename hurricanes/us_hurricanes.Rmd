@@ -1,0 +1,65 @@
+---
+title: "Every Hurricane That Has Hit the United States Since 1950"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+source('db_conn.R')
+source('hurricanes.R')
+conn <- hurr_db_connect()
+
+library(dplyr)
+library(leaflet)
+library(htmlwidgets)
+library(ggplot2)
+library(pander)
+# library(rjson) Trash
+```
+
+```{r ggplot Default Theme, echo=FALSE}
+theme_set(theme_bw() + theme(
+    legend.position="bottom",
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black")))
+```
+
+# Every Hurricane That Has Hit the United States Since 1950
+```{sql connection=conn, output.var='all_us_hurr'}
+SELECT *, saffir_simpson_color(wind_max_kt) AS color FROM
+(WITH all_hurr AS
+(SELECT array_to_json(array_agg(path_intensity)) FROM 
+(SELECT unnest(path_intensity) as path_intensity
+FROM us_hurricanes WHERE season > 1950) AS all_us_hurr)
+SELECT * FROM
+json_to_recordset((SELECT * FROM all_hurr)) AS
+x(name text, time text, lon float, lat float, wind_max_kt float, sshs text)) as inner_
+```
+
+```{r, echo=FALSE}
+# See: https://stackoverflow.com/questions/42989040/how-to-troubleshoot-missing-osm-tiles-in-leaflet-html-widget
+m <- leaflet(width=900, height=600)
+m <- addProviderTiles(m, providers$OpenStreetMap, group = "OSM")
+m <- addCircleMarkers(m,
+                      stroke=FALSE,
+                      # fillOpacity=all_us_hurr$opacity,
+                      fillOpacity=0.2,
+                      lng=all_us_hurr$lon,
+                      lat=all_us_hurr$lat,
+                      color=all_us_hurr$color)
+m <- addLegend(m, position = c("bottomright"), title="Intensity",
+               labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
+m <- setView(m, -90, 25, 5)
+m
+```
+
+## Fast Facts
+```{sql connection=conn}
+SELECT count(*) FROM us_hurricanes
+WHERE season >= 1950 and season < 2016
+```
+
+A total of 355 hurricanes hit the United States between 1950 and 2016, for an average of about 4 per year.

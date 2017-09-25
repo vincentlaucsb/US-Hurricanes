@@ -30,7 +30,7 @@ CREATE INDEX ON ibtracs_allstorms (name);
 CREATE INDEX ON ibtracs_allstorms USING brin (season);
 
 -- Hurricane Summary (requires PostGIS)
-DROP MATERIALIZED VIEW IF EXISTS hurricane_summary;
+DROP MATERIALIZED VIEW IF EXISTS hurricane_summary CASCADE;
 CREATE MATERIALIZED VIEW hurricane_summary AS
 WITH init_query AS (SELECT
 	serial_num, name, season,
@@ -46,6 +46,7 @@ WITH init_query AS (SELECT
     -- Each of with corresponds to the location and intensity of a hurricane 
     -- at one point in time
     array_agg(jsonb_build_object(
+        'name', name,
         'lon', longitude_for_mapping,
         'lat', latitude_for_mapping,
         'time', iso_time,
@@ -67,3 +68,16 @@ SELECT
     array_min(time_range) AS begin,
     array_max(time_range) AS end
 FROM init_query;
+
+-- Hurricanes Making Landfall in the US
+DROP MATERIALIZED VIEW IF EXISTS us_hurricanes;
+CREATE MATERIALIZED VIEW us_hurricanes AS
+SELECT *, st_length(path) FROM hurricane_summary 
+WHERE st_intersects(path, (SELECT * FROM us_bbox))
+and st_length(path) < 300;
+
+-- PostGIS Stuff
+
+-- United States bounding box
+CREATE VIEW us_bbox AS
+SELECT ST_union(array_agg(st_envelope(geom))) FROM us_outline

@@ -1,7 +1,8 @@
 ---
 title: "Have Hurricanes Gotten More Severe"
 output:
-  html_document: default
+  html_document:
+    theme: null
   html_notebook: default
   pdf_document: default
 ---
