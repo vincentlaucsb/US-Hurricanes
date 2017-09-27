@@ -1,0 +1,48 @@
+---
+title: "Have Hurricanes Gotten More Severe"
+output:
+  html_notebook: default
+  html_document:
+    theme: null
+  pdf_document: default
+---
+
+```{r, message=FALSE, warning=FALSE}
+source('db_conn.R')
+source('hurricanes.R')
+conn <- hurr_db_connect()
+
+library(dplyr)
+library(leaflet)
+library(ggplot2)
+library(pander)
+# library(rjson) Trash
+```
+
+```{r ggplot Default Theme, echo=FALSE}
+theme_set(theme_bw() + theme(
+    legend.position="bottom",
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black")))
+```
+
+# Hurricanes
+# Have Hurricanes Become Worse
+### Have Category 5 hurricanes become more common
+```{sql connection=conn, output.var='ace'}
+SELECT
+  season,
+  sum(ace(path_intensity)) AS ace
+FROM hurricane_summary
+WHERE season >= 1950
+  AND st_intersects(path, st_makeenvelope(-70, -10, 0, 90, 4269))
+GROUP BY season
+ORDER BY season ASC
+```
+
+```{r}
+ggplot(ace, aes(x=season, y=ace)) + geom_bar(stat='identity') +
+  labs(title="Accumulated Cyclone Energy - North Atlantic")
+```

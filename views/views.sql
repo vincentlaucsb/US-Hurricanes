@@ -1,3 +1,7 @@
+-- Reminder:
+-- Longitude = West and East (x)
+-- Latitude = North and South (y)
+
 CREATE VIEW ibtracs_hurricane_names2 AS
 SELECT *, jsonb_object_keys(names) FROM ibtracs_hurricane_names
 
@@ -9,10 +13,10 @@ SELECT
     begin_date_time::timestamp as begin_date_time2,
     end_date_time::timestamp as end_date_time2,
     ST_SetSRID(
-        ST_MakePoint(begin_lat, begin_lon),
+        ST_MakePoint(begin_lon, begin_lat),
         4269) as begin_point,
     ST_SetSRID(
-        ST_MakePoint(end_lat, end_lon),
+        ST_MakePoint(end_lon, end_lat),
         4269) as end_point
 FROM storm_events_details;
 
@@ -51,10 +55,13 @@ WITH init_query AS (SELECT
         'lat', latitude_for_mapping,
         'time', iso_time,
         'wind_max_kt', wind_wmo,
-        'sshs', saffir_simpson(wind_wmo))) as path_intensity,
+        'sshs', saffir_simpson(wind_wmo))
+        
+        -- Crucial: Make path_intensity ordered by time or else PDI won't work
+        ORDER BY iso_time::timestamp ASC) as path_intensity,
 
 	array_agg(iso_time) as time_range
-FROM ibtracs_hurricanes
+FROM ibtracs_hurricanes ordered_by_time
 GROUP BY serial_num, name, season
 ORDER BY season ASC)
 SELECT
