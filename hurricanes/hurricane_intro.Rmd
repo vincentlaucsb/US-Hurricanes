@@ -1,5 +1,5 @@
 ---
-title: "Have Hurricanes Gotten More Severe"
+title: "A Brief Introduction to Hurricanes"
 output:
   html_document:
     theme: null
@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 source('db_conn.R')
 source('hurricanes.R')
 conn <- hurr_db_connect()

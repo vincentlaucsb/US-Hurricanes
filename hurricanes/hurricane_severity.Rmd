@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 source('db_conn.R')
 source('hurricanes.R')
 conn <- hurr_db_connect()

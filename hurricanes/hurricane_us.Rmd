@@ -1,7 +1,8 @@
 ---
 title: "Every Hurricane That Has Hit the United States Since 1950"
 output:
-  html_document: default
+  html_document:
+    theme: null
   html_notebook: default
 ---
 

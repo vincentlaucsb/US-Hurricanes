@@ -1,0 +1,14 @@
+{
+    "global": {
+        "metadata": {
+            "authors": "Vincent La"
+        },
+        "include": ["hurricane_severity.html", "hurricane_us.html", "hurricane_intro.html"],
+        "output_dir": "C:\\Users\\vince\\Dropbox\\vinceladotcom\\content\\us-wth"
+    },
+    "hurricanes.html": {
+        "metadata": {
+            "summary": "An analysis of hurricane activity"
+        }
+    }
+}
