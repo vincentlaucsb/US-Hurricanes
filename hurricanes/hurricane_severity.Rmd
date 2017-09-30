@@ -4,7 +4,9 @@ output:
   html_notebook: default
   html_document:
     theme: null
+    highlight: null
   pdf_document: default
+bibliography: hurricane_severity.bibtex
 ---
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
@@ -13,6 +15,7 @@ source('hurricanes.R')
 conn <- hurr_db_connect()
 
 library(dplyr)
+library(forecast)
 library(leaflet)
 library(ggplot2)
 library(pander)
@@ -28,21 +31,121 @@ theme_set(theme_bw() + theme(
     axis.line = element_line(colour = "black")))
 ```
 
-# Hurricanes
-# Have Hurricanes Become Worse
-### Have Category 5 hurricanes become more common
+## Have Hurricanes Become Worse?
+When Hurricane Katrina made landfall over Louisiana, it quickly became one of the worst natural disasters in American history.
+This led many to single out Katrina as the result of global warming. However, "there is no way to prove that Katrina either was, or was not, affected by global warming. For a single event, regardless of how extreme, such attribution is fundamentally impossible. We only have one Earth, and it will follow only one of an infinite number of possible weather sequences." [@real_climate_katrina]
+
+Even without climate change, severe storms like Katrina can still happen due to pure chance. However, we can still ask if *the probability of severe storms* has 
+increased in recent years.
+
+### Measuring Hurricane Intensity: Saffir-Simpson Hurricane Scale
+
+```{r "SSHS Diagram"}
+sshs_diagram()
+```
+
+### Frequency and Intensity of Storms
+Before you freak out at the graph below, note that important pieces of weather tracking.
+
+```{sql connection=conn, output.var='hurr_by_year'}
+SELECT
+  season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
+  saffir_simpson(AVG(wind_max_kt))
+FROM hurricane_summary
+WHERE season > 1900 AND wind_max_kt::int != -999
+GROUP BY season
+ORDER BY season
+```
+
+```{r "Hurricanes per Season", echo=FALSE}
+add_notes(ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
+  geom_bar(stat='identity') +
+  
+  # Rescale to fit text annotations
+  scale_y_continuous(limits=c(0, 160)) + 
+  
+  # Manually set legend for hurricane intensity
+  scale_fill_manual(
+    "Average Intensity",
+    values = c("Tropical Depression" = "#5ebaff",
+               "Tropical Storm" = "#00faf4",
+               "Category 1" = "#ffffcc")
+  ) +
+  labs(
+    title="Number of Hurricanes per Season",
+    x="Year",
+    y="Number"
+  ))
+```
+
+From the figure above, there doesn't appear to be any change in the frequency of hurricanes since 1970.
+For climate scientists, this is unsurprising because most hurricane models--when considering global warming,
+while predicting stronger storms, do not predict more storms. (cite)
+
+### Have Severe Hurricanes Become More Common
+```{sql connection=conn, output.var='hurr_by_cat_year'}
+SELECT
+  season, saffir_simpson(wind_max_kt), count(name)
+FROM hurricane_summary
+WHERE season > 1900 AND wind_max_kt::int != -999
+GROUP BY saffir_simpson(wind_max_kt), season
+ORDER BY season
+```
+
+```{r echo=FALSE}
+add_notes(ggplot(hurr_by_cat_year, aes(x=season, y=count, fill=saffir_simpson)) +
+  geom_bar(stat='identity') +
+  scale_fill_manual(
+    "Intensity (Saffir-Simpson)",
+    values = SSHS_COLOR_LABEL
+  ) +
+  labs(
+    title="Number of Hurricanes per Season",
+    x="Year",
+    y="Number"
+  ))
+```
+
+### Category 5 Hurricanes
+```{sql connection=conn, output.var='cat5'}
+SELECT
+  season, name, wind_max_kt * 1.15078
+FROM hurricane_summary
+WHERE season > 1900 AND saffir_simpson(wind_max_kt) LIKE 'Category 5'
+ORDER BY season DESC
+```
+
+```{r echo=FALSE}
+names(cat5) = c("Season", "Name", "Peak Wind (MPH)")
+pander(widen(cat5))
+```
+
+## Accumulated Cyclone Energy
+Although simple, the Saffir Simpson Hurricane Wind Scale is not a complete description of a hurricane.
+By referring using a storm's peak SSHWS rating to categorize its strength, we do not get an accurate
+view of how much energy was produced during the entire *lifetime* of a storm.
+
 ```{sql connection=conn, output.var='ace'}
 SELECT
   season,
   sum(ace(path_intensity)) AS ace
 FROM hurricane_summary
-WHERE season >= 1950
+WHERE season >= 1975
   AND st_intersects(path, st_makeenvelope(-70, -10, 0, 90, 4269))
 GROUP BY season
 ORDER BY season ASC
 ```
 
 ```{r}
+ace_ts <- ts(data=ace, start=1975, end=2016, frequency=1)
+ace_trend <- tslm(ace ~ season, data=ace_ts)
+
 ggplot(ace, aes(x=season, y=ace)) + geom_bar(stat='identity') +
-  labs(title="Accumulated Cyclone Energy - North Atlantic")
+  geom_abline(intercept=coef(ace_trend)[1], slope=coef(ace_trend)[2]) +
+  labs(title="Accumulated Cyclone Energy - North Atlantic",
+       x="Season",
+       y="Accumulated Cyclone Energy")
+       
 ```
+
+## References

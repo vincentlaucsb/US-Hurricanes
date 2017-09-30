@@ -1,11 +1,21 @@
+library(ggplot2)
+
 widen <- function(df) {
   # Given a data frame widen split it into two tables with the same length
   new_nrow = nrow(df)/2
-  left = df[1:new_nrow, ]
-  right = df[new_nrow: nrow(df), ]
+  left = df[1, ]
+  right = df[2, ]
   
-  if (nrow(left) < nrow(right)) {
-    left[new_nrow + 1, ] = rep("", ncol(left))
+  for(i in 3:nrow(df)) {
+    if (i%%2 == 1) {
+      left <- rbind(left, df[i, ])
+    } else {
+      right <- rbind(right, df[i, ])
+    }
+  }
+  
+  if (nrow(left) > nrow(right)) {
+    right <- rbind(right, rep("", ncol(right)))
   }
   
   return(cbind(left, right))
@@ -73,4 +83,17 @@ sshs_diagram <- function() {
       x="",
       y="Miles Per Hour"
     ))
+}
+
+add_notes <- function(plot) {
+  return(plot + annotate('segment', x=1957, xend=1957, y=0, yend=150, size=1, color="#2b2b2b") +
+    annotate('label', x=1957, y=150, color="white", fill="#2b2b2b",
+             label.padding = unit(0.5, "lines"),
+             label="1957: First weather surveillance radar designed") +
+    
+    # First Weather Satellite
+    annotate('segment', x=1960, xend=1960, y=0, yend=130, size=1, color="#666666") +
+    annotate('label', x=1960, y=130, color="white", fill="#666666",
+             label.padding = unit(0.5, "lines"),
+             label="1960: First weather satellite launched"))
 }

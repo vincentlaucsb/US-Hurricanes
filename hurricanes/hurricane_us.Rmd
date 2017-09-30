@@ -1,9 +1,10 @@
 ---
 title: "Every Hurricane That Has Hit the United States Since 1950"
 output:
-  html_document:
-    theme: null
   html_notebook: default
+  html_document:
+    highlight: null
+    theme: null
 ---
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
@@ -16,7 +17,6 @@ library(leaflet)
 library(htmlwidgets)
 library(ggplot2)
 library(pander)
-# library(rjson) Trash
 ```
 
 ```{r ggplot Default Theme, echo=FALSE}
@@ -64,3 +64,5 @@ WHERE season >= 1950 and season < 2016
 ```
 
 A total of 355 hurricanes hit the United States between 1950 and 2016, for an average of about 4 per year.
+
+## References

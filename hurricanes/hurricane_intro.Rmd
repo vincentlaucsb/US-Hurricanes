@@ -1,9 +1,10 @@
 ---
 title: "A Brief Introduction to Hurricanes"
 output:
-  html_document:
-    theme: null
   html_notebook: default
+  html_document:
+    highlight: null
+    theme: null
   pdf_document: default
 ---
 
@@ -28,82 +29,26 @@ theme_set(theme_bw() + theme(
     axis.line = element_line(colour = "black")))
 ```
 
-# Hurricanes
-## Measuring Hurricane Intensity: Saffir-Simpson Hurricane Scale
+For as long as humans have settled the coast, hurricanes have been a menace to civilization:
 
-```{r "SSHS Diagram"}
-sshs_diagram()
-```
-
-## Have Hurricanes Become Worse
-### Have Category 5 hurricanes become more common
-```{sql connection=conn, output.var='cat5'}
-SELECT
-  season, name, wind_max_kt
-FROM hurricane_summary
-WHERE season > 1900 AND saffir_simpson(wind_max_kt) LIKE 'Category 5'
-ORDER BY season DESC
-```
-
-```{r echo=FALSE}
-names(cat5) = c("Season", "Name", "Peak Wind (Knots)")
-pander(widen(cat5))
-```
-
-### Have they gotten stronger
-```{sql connection=conn, output.var='hurr_by_year'}
-SELECT
-  season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
-  saffir_simpson(AVG(wind_max_kt))
-FROM hurricane_summary
-WHERE season > 1900 AND wind_max_kt::int != -999
-GROUP BY season
-ORDER BY season
-```
-
-```{r "Hurricanes per Season", echo=FALSE}
-ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
-  geom_bar(stat='identity') +
-  scale_fill_manual(
-    "Average Intensity",
-    values = c("Tropical Depression" = "#5ebaff",
-               "Tropical Storm" = "#00faf4",
-               "Category 1" = "#ffffcc")
-  ) +
-  labs(
-    title="Number of Hurricanes per Season",
-    x="Year",
-    y="Number"
-  )
-```
-
-```{sql connection=conn, output.var='hurr_by_cat_year'}
-SELECT
-  season, saffir_simpson(wind_max_kt), count(name)
-FROM hurricane_summary
-WHERE season > 1900 AND wind_max_kt::int != -999
-GROUP BY saffir_simpson(wind_max_kt), season
-ORDER BY season
-```
-
-```{r}
-ggplot(hurr_by_cat_year, aes(x=season, y=count, fill=saffir_simpson)) +
-  geom_bar(stat='identity') +
-  scale_fill_manual(
-    "Intensity (Saffir-Simpson)",
-    values = SSHS_COLOR_LABEL
-  ) +
-  labs(
-    title="Number of Hurricanes per Season",
-    x="Year",
-    y="Number"
-  )
-```
+> Within the last two or three years, people have begun to think that the islands
+  and peninsulas along the Texas and Louisiana Coast are unsafe for human abiding places. And
+  Galveston Island is but a waif of the ocean, liable at any moment of
+  being engulfed and submerged by the self-same power that gave it form.
+    -- Braman's Information About Texas, 1858
 
 ## 1900 Galveston Hurricane
-The 1900 hurricane that hit Galveston, Texas was the deadliest hurricane in American history.
+Surprisingly, with all the talk of the increasing risk caused by climate change, the deadliest storm in 
+American history occured over a hundred years ago. 
 
-(Write more later)
+### Hurricane Naming
+Despite being the deadliest hurricane in American history, this storm is simply known by the location it struck. Meterologists did not decide to give official names were not given to hurricanes until 1953. Since then, names are recycled from six lists--each corresponding to different regions of the world. However, names associated with notoriously deadly or costly storms are removed.
+
+### Path
+While meteorologists had eyes on the 1900 hurricane as early as August 30, they were unable to get a good idea of its trajectory.
+As shown on the map below, as it moved over the Gulf of Mexico over the Florida Keys, it rapidly strengthened and
+then took a sudden westward turn. Although ships in the area were
+able to get a fix on its trajectory, the limited communications abilities of the time prevented this information from reaching shore.
 
 ```{sql connection=conn, output.var='galv1900'}
 WITH galv1900 AS
@@ -114,11 +59,6 @@ SELECT *
 FROM json_to_recordset(array_to_json((SELECT * FROM galv1900)))
 AS x(lon float, lat float, wind_max_kt float, time text, sshs text)
 ```
-
-### Path
-While meteorologists had eyes on the 1900 hurricane as early as August 30, they were unable to get a good idea of its trajectory.
-As it moved over the Gulf of Mexico, it rapidly strengthened and moved more westward than expected. Although ships in the area were
-able to get a fix on its trajectory, the limited communications abilities of the time prevented this information from reaching shore.
 
 ```{r, echo=FALSE}
 # See: https://stackoverflow.com/questions/42989040/how-to-troubleshoot-missing-osm-tiles-in-leaflet-html-widget
@@ -136,3 +76,55 @@ m <- addLegend(m, position = c("bottomright"), title="Intensity",
 m
 ```
 
+### The Aftermath
+Before the storm, Galveston, Texas was a bustling coastal town. However, when it
+struck on September 8, 1900 the 
+storm with its 140 mph winds and massive storm surge killed between 6000-12000
+people (out of a population of 37000). This effectively ended the "Golden Era of Galveston".
+
+## Hurricane Tracking
+At least in the United States, it is unlikely that another 1900 Galveston could occur.
+Armed with a bevy of aircraft, radar, sallites, and computer models, today's metereologists 
+are much more able to accurately predict the path of a hurricane and warn those in harms way.
+
+### Effectiveness
+The graph below speaks for itself in regards to the efficacy of modern hurricane tracking.
+
+```{sql connection=conn, output.var='hurr_by_year'}
+SELECT
+  season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
+  saffir_simpson(AVG(wind_max_kt))
+FROM hurricane_summary
+WHERE season > 1900 AND wind_max_kt::int != -999
+GROUP BY season
+ORDER BY season
+```
+
+```{r "Hurricanes per Season", echo=FALSE}
+add_notes(ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
+  geom_bar(stat='identity') +
+  
+  # Rescale to fit text annotations
+  scale_y_continuous(limits=c(0, 160)) + 
+  
+  # Manually set legend for hurricane intensity
+  scale_fill_manual(
+    "Average Intensity",
+    values = c("Tropical Depression" = "#5ebaff",
+               "Tropical Storm" = "#00faf4",
+               "Category 1" = "#ffffcc")
+  ) +
+  labs(
+    title="Number of Hurricanes per Season",
+    x="Year",
+    y="Number"
+  ))
+```
+
+### Aircraft
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Video of a flight through the eye of <a href="https://twitter.com/hashtag/Irma?src=hash&amp;ref_src=twsrc%5Etfw">#Irma</a> on <a href="https://twitter.com/hashtag/NOAA42?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA42</a>. Flights on both the WP-3D Orion and G-IV <a href="https://twitter.com/hashtag/NOAA49?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA49</a> continue. Credit Nick Underwood/NOAA <a href="https://t.co/9ini4bOnYF">pic.twitter.com/9ini4bOnYF</a></p>&mdash; NOAAHurricaneHunters (@NOAA_HurrHunter) <a href="https://twitter.com/NOAA_HurrHunter/status/905184657431506945?ref_src=twsrc%5Etfw">September 5, 2017</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+### Radar
+
+## References
