@@ -121,6 +121,51 @@ add_notes(ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
   ))
 ```
 
+### Motivation
+The Weather Bureau (now the National Weather Service) didn't always have the blessing of adequate funding. However, 
+Hurricanes Carol and Edna in 1954 reversed their fortunates, convincing Congress to
+allocate more funds for hurricane research.
+
+```{sql connection=conn, output.var='carol1954'}
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
+FROM hurricane_path('CAROL', 1954)
+```
+
+```{sql connection=conn, output.var='edna1954'}
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
+FROM hurricane_path('EDNA', 1954)
+```
+
+```{r, echo=FALSE}
+m <- leaflet()
+m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
+
+# Hurricane Carol
+m <- addPolylines(m,
+                  lng=carol1954$lon,
+                  lat=carol1954$lat,
+                  color="white",
+                  label="Hurricane Carol (1954)")
+m <- addCircleMarkers(m,
+                  label=carol1954$time,
+                  lng=carol1954$lon,
+                  lat=carol1954$lat,
+                  color=carol1954$sshs_color)
+
+# Hurricane Edna
+m <- addPolylines(m, lng=edna1954$lon, lat=edna1954$lat,
+                  label="Hurricane Edna (1954)", color="white")
+m <- addCircleMarkers(m,
+                  label=edna1954$time,
+                  lng=edna1954$lon,
+                  lat=edna1954$lat,
+                  color=edna1954$sshs_color)
+
+m <- addLegend(m, position = c("bottomright"), title="Intensity",
+               labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
+m
+```
+
 ### Aircraft
 <blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Video of a flight through the eye of <a href="https://twitter.com/hashtag/Irma?src=hash&amp;ref_src=twsrc%5Etfw">#Irma</a> on <a href="https://twitter.com/hashtag/NOAA42?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA42</a>. Flights on both the WP-3D Orion and G-IV <a href="https://twitter.com/hashtag/NOAA49?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA49</a> continue. Credit Nick Underwood/NOAA <a href="https://t.co/9ini4bOnYF">pic.twitter.com/9ini4bOnYF</a></p>&mdash; NOAAHurricaneHunters (@NOAA_HurrHunter) <a href="https://twitter.com/NOAA_HurrHunter/status/905184657431506945?ref_src=twsrc%5Etfw">September 5, 2017</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>

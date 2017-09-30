@@ -8,7 +8,7 @@
         },
         "include": ["hurricane_severity.html", "hurricane_us.html", "hurricane_intro.html"],
         "pelican_dir": "C:\\Users\\vince\\Dropbox\\vinceladotcom",
-        "output_dir": "C:\\Users\\vince\\Dropbox\\vinceladotcom\\content\\us-wth"
+        "output_dir": "C:\\Users\\vince\\Dropbox\\vinceladotcom\\content\\hurricane"
     },
     "hurricanes.html": {
         "metadata": {
