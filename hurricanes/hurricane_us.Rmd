@@ -1,5 +1,5 @@
 ---
-title: "Every Hurricane That Has Hit the United States Since 1950"
+title: "Fast Facts: Hurricanes in the United States"
 output:
   html_notebook: default
   html_document:

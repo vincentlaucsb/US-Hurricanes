@@ -17,7 +17,6 @@ library(dplyr)
 library(leaflet)
 library(ggplot2)
 library(pander)
-# library(rjson) Trash
 ```
 
 ```{r ggplot Default Theme, echo=FALSE}
@@ -55,7 +54,7 @@ WITH galv1900 AS
 (SELECT path_intensity FROM hurricane_summary 
 WHERE season::int = 1900
 AND st_intersects(path, (SELECT geom FROM us_states WHERE name LIKE 'Texas')))
-SELECT *
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
 FROM json_to_recordset(array_to_json((SELECT * FROM galv1900)))
 AS x(lon float, lat float, wind_max_kt float, time text, sshs text)
 ```
@@ -64,13 +63,7 @@ AS x(lon float, lat float, wind_max_kt float, time text, sshs text)
 # See: https://stackoverflow.com/questions/42989040/how-to-troubleshoot-missing-osm-tiles-in-leaflet-html-widget
 m <- leaflet()
 m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
-for (i in 1:nrow(galv1900)) {
-  m <- addCircleMarkers(m,
-                        label=galv1900$time[i],
-                        lng=galv1900$lon[i],
-                        lat=galv1900$lat[i],
-                        color=sshs_color(galv1900$sshs[i]))
-}
+m <- addStormPath(m, galv1900)
 m <- addLegend(m, position = c("bottomright"), title="Intensity",
                labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
 m
@@ -139,28 +132,8 @@ FROM hurricane_path('EDNA', 1954)
 ```{r, echo=FALSE}
 m <- leaflet()
 m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
-
-# Hurricane Carol
-m <- addPolylines(m,
-                  lng=carol1954$lon,
-                  lat=carol1954$lat,
-                  color="white",
-                  label="Hurricane Carol (1954)")
-m <- addCircleMarkers(m,
-                  label=carol1954$time,
-                  lng=carol1954$lon,
-                  lat=carol1954$lat,
-                  color=carol1954$sshs_color)
-
-# Hurricane Edna
-m <- addPolylines(m, lng=edna1954$lon, lat=edna1954$lat,
-                  label="Hurricane Edna (1954)", color="white")
-m <- addCircleMarkers(m,
-                  label=edna1954$time,
-                  lng=edna1954$lon,
-                  lat=edna1954$lat,
-                  color=edna1954$sshs_color)
-
+m <- addStormPath(m, carol1954)
+m <- addStormPath(m, edna1954)
 m <- addLegend(m, position = c("bottomright"), title="Intensity",
                labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
 m

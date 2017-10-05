@@ -1,0 +1,125 @@
+---
+title: "A Brief Introduction to Hurricanes"
+output:
+  html_notebook: default
+  html_document:
+    highlight: null
+    theme: null
+  pdf_document: default
+---
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+source('db_conn.R')
+source('hurricanes.R')
+conn <- hurr_db_connect()
+
+library(dplyr)
+library(leaflet)
+library(ggplot2)
+library(pander)
+```
+
+```{r ggplot Default Theme, echo=FALSE}
+theme_set(theme_bw() + theme(
+    legend.position="bottom",
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black")))
+```
+
+```{sql connection=conn, output.var='big_boi'}
+WITH big_bois AS
+(SELECT path_intensity FROM hurricane_summary WHERE season == 1951 AND ST_length(path) > 400 LIMIT 1)
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
+FROM json_to_recordset(array_to_json((SELECT * FROM big_bois)))
+AS x(lon float, lat float, wind_max_kt float, time text, sshs text)
+```
+
+```{r, echo=FALSE}
+# See: https://stackoverflow.com/questions/42989040/how-to-troubleshoot-missing-osm-tiles-in-leaflet-html-widget
+m <- leaflet()
+m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
+m <- addStormPath(m, big_boi)
+m <- addLegend(m, position = c("bottomright"), title="Intensity",
+               labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
+m
+```
+
+### The Aftermath
+Before the storm, Galveston, Texas was a bustling coastal town. However, when it
+struck on September 8, 1900 the 
+storm with its 140 mph winds and massive storm surge killed between 6000-12000
+people (out of a population of 37000). This effectively ended the "Golden Era of Galveston".
+
+## Hurricane Tracking
+At least in the United States, it is unlikely that another 1900 Galveston could occur.
+Armed with a bevy of aircraft, radar, sallites, and computer models, today's metereologists 
+are much more able to accurately predict the path of a hurricane and warn those in harms way.
+
+### Effectiveness
+The graph below speaks for itself in regards to the efficacy of modern hurricane tracking.
+
+```{sql connection=conn, output.var='hurr_by_year'}
+SELECT
+  season, count(name), round(AVG(wind_max_kt)::numeric, 1),        
+  saffir_simpson(AVG(wind_max_kt))
+FROM hurricane_summary
+WHERE season > 1900 AND wind_max_kt::int != -999
+GROUP BY season
+ORDER BY season
+```
+
+```{r "Hurricanes per Season", echo=FALSE}
+add_notes(ggplot(hurr_by_year, aes(x=season, y=count, fill=saffir_simpson)) +
+  geom_bar(stat='identity') +
+  
+  # Rescale to fit text annotations
+  scale_y_continuous(limits=c(0, 160)) + 
+  
+  # Manually set legend for hurricane intensity
+  scale_fill_manual(
+    "Average Intensity",
+    values = c("Tropical Depression" = "#5ebaff",
+               "Tropical Storm" = "#00faf4",
+               "Category 1" = "#ffffcc")
+  ) +
+  labs(
+    title="Number of Hurricanes per Season",
+    x="Year",
+    y="Number"
+  ))
+```
+
+### Motivation
+The Weather Bureau (now the National Weather Service) didn't always have the blessing of adequate funding. However, 
+Hurricanes Carol and Edna in 1954 reversed their fortunates, convincing Congress to
+allocate more funds for hurricane research.
+
+```{sql connection=conn, output.var='carol1954'}
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
+FROM hurricane_path('CAROL', 1954)
+```
+
+```{sql connection=conn, output.var='edna1954'}
+SELECT *, saffir_simpson_color(wind_max_kt) as sshs_color
+FROM hurricane_path('EDNA', 1954)
+```
+
+```{r, echo=FALSE}
+m <- leaflet()
+m <- addProviderTiles(m, providers$Esri.WorldImagery, group = "Esri")
+m <- addStormPath(m, carol1954)
+m <- addStormPath(m, edna1954)
+m <- addLegend(m, position = c("bottomright"), title="Intensity",
+               labels=SSHS_LABELS, colors=SSHS_COLOR_SCALE)
+m
+```
+
+### Aircraft
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Video of a flight through the eye of <a href="https://twitter.com/hashtag/Irma?src=hash&amp;ref_src=twsrc%5Etfw">#Irma</a> on <a href="https://twitter.com/hashtag/NOAA42?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA42</a>. Flights on both the WP-3D Orion and G-IV <a href="https://twitter.com/hashtag/NOAA49?src=hash&amp;ref_src=twsrc%5Etfw">#NOAA49</a> continue. Credit Nick Underwood/NOAA <a href="https://t.co/9ini4bOnYF">pic.twitter.com/9ini4bOnYF</a></p>&mdash; NOAAHurricaneHunters (@NOAA_HurrHunter) <a href="https://twitter.com/NOAA_HurrHunter/status/905184657431506945?ref_src=twsrc%5Etfw">September 5, 2017</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+### Radar
+
+## References

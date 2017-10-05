@@ -86,6 +86,7 @@ sshs_diagram <- function() {
 }
 
 add_notes <- function(plot) {
+  # Add notes about weather tracking technology
   return(plot + annotate('segment', x=1957, xend=1957, y=0, yend=150, size=1, color="#2b2b2b") +
     annotate('label', x=1957, y=150, color="white", fill="#2b2b2b",
              label.padding = unit(0.5, "lines"),
@@ -96,4 +97,23 @@ add_notes <- function(plot) {
     annotate('label', x=1960, y=130, color="white", fill="#666666",
              label.padding = unit(0.5, "lines"),
              label="1960: First weather satellite launched"))
+}
+
+# ==== Map Functions ====
+addStormPath <- function(map, data) {
+  # Given a data frame containing a storm's path, add a line
+  # and makers
+  
+  map <- addPolylines(map,
+                      label=data$hurricane_name,
+                      lng=data$lon,
+                      lat=data$lat,
+                      opacity=0.5,
+                      color="white")
+  
+  map <- addCircleMarkers(map,
+    label=paste0(data$hurricane_name, " -- ", data$sshs, " -- ", data$datetime),
+    lng=data$lon, lat=data$lat, color=data$sshs_color)
+  
+  return(map)
 }

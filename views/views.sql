@@ -76,14 +76,21 @@ SELECT
     array_max(time_range) AS end
 FROM init_query;
 
--- Hurricanes Making Landfall in the US
+-- Hurricanes Making Landfall in the Mainland US
 DROP MATERIALIZED VIEW IF EXISTS us_hurricanes;
 CREATE MATERIALIZED VIEW us_hurricanes AS
-SELECT *, st_length(path) FROM hurricane_summary 
-WHERE st_intersects(path, (SELECT * FROM us_bbox))
-and st_length(path) < 300;
-
--- PostGIS Stuff
+SELECT * FROM 
+    (SELECT *, st_length(path) FROM hurricane_summary 
+    WHERE st_intersects(path, (SELECT * FROM us_bbox))) as init_query
+WHERE 
+    -- Temporary fix involving handling of paths crossing 180th meridian
+    NOT(st_intersects(path, ST_MakeLine(
+        ST_SetSRID(ST_MakePoint(170, 80), 4269),
+        ST_SetSRID(ST_MakePoint(170, -80), 4269))))
+        
+    -- Ignore Hawaiian typhoons
+    AND NOT(st_crosses(path,
+        (SELECT geom FROM us_states WHERE name LIKE 'FLORIDA')))
 
 -- United States bounding box
 CREATE VIEW us_bbox AS
